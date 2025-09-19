@@ -1,0 +1,13 @@
+node_modules
+.dist
+.dist-electron
+.vscode
+.env
+pnpm-lock.yaml
+yarn.lock
+dist
+dist-electron
+.sqlite
+prisma/dev.db
+coverage
+playwright-report

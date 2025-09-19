@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String          @id @default(cuid())
+  email      String          @unique
+  name       String?
+  premium    Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  closets    Closet[]
+  items      Item[]
+  outfits    Outfit[]
+  groups     GroupMember[]
+  wishlist   WishlistItem[]
+  activities Activity[]
+}
+
+model Closet {
+  id        String  @id @default(cuid())
+  userId    String
+  name      String
+  season    String?
+  isDefault Boolean @default(false)
+  items     Item[]
+  outfits   Outfit[]
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Item {
+  id           String   @id @default(cuid())
+  userId       String
+  closetId     String
+  title        String
+  category     String
+  color        String?
+  brand        String?
+  size         String?
+  fabric       String?
+  season       String?
+  price        Float?
+  purchaseAt   DateTime?
+  wears        Int      @default(0)
+  lastWornAt   DateTime?
+  imagePath    String
+  tags         String[]
+  user         User     @relation(fields: [userId], references: [id])
+  closet       Closet   @relation(fields: [closetId], references: [id])
+  resaleListed Boolean  @default(false)
+  resalePrice  Float?
+  createdAt    DateTime  @default(now())
+}
+
+model Outfit {
+  id        String   @id @default(cuid())
+  userId    String
+  closetId  String
+  name      String
+  items     String
+  occasion  String?
+  style     String?
+  favorite  Boolean  @default(false)
+  imagePath String?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  closet    Closet    @relation(fields: [closetId], references: [id])
+}
+
+model WishlistItem {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  brand       String?
+  price       Float?
+  url         String?
+  imageUrl    String?
+  tags        String[]
+  desiredSize String?
+  status      String   @default("wanted")
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Group {
+  id      String        @id @default(cuid())
+  name    String
+  ownerId String
+  members GroupMember[]
+  shares  ShareLink[]
+}
+
+model GroupMember {
+  id      String @id @default(cuid())
+  groupId String
+  userId  String
+  role    String
+  group   Group  @relation(fields: [groupId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+}
+
+model ShareLink {
+  id         String   @id @default(cuid())
+  userId     String
+  targetId   String
+  targetType String
+  visibility String
+  groupId    String?
+  createdAt  DateTime @default(now())
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  payload   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Challenge {
+  id        String           @id @default(cuid())
+  title     String
+  rules     String
+  deadline  DateTime
+  ownerId   String
+  entries   ChallengeEntry[]
+  createdAt DateTime         @default(now())
+}
+
+model ChallengeEntry {
+  id          String   @id @default(cuid())
+  challengeId String
+  userId      String
+  outfitId    String
+  votes       Int      @default(0)
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  outfit      Outfit    @relation(fields: [outfitId], references: [id])
+}

@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "dist-electron",
+    "jsx": "react",
+    "types": ["node"],
+    "lib": ["ES2020"],
+    "sourceMap": true
+  },
+  "include": ["app/electron/**/*.ts", "app/common/**/*.ts", "app/ipc/**/*.ts"],
+  "exclude": ["app/renderer"]
+}
